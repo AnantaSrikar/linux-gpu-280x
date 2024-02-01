@@ -597,6 +597,8 @@ static int radeon_crtc_page_flip_target(struct drm_crtc *crtc,
 	/* update crtc fb */
 	crtc->primary->fb = fb;
 
+	// TODO: Find out why the frambuffer is being updated
+
 	spin_unlock_irqrestore(&crtc->dev->event_lock, flags);
 
 	queue_work(radeon_crtc->flip_queue, &work->flip_work);
@@ -1305,6 +1307,9 @@ radeon_framebuffer_init(struct drm_device *dev,
 	fb->obj[0] = obj;
 	drm_helper_mode_fill_fb_struct(dev, fb, mode_cmd);
 	ret = drm_framebuffer_init(dev, fb, &radeon_fb_funcs);
+
+	DRM_DEBUG_KMS("radeon_framebuffer_init: %p\n", obj);
+
 	if (ret) {
 		fb->obj[0] = NULL;
 		return ret;
@@ -1336,6 +1341,11 @@ radeon_user_framebuffer_create(struct drm_device *dev,
 	}
 
 	fb = kzalloc(sizeof(*fb), GFP_KERNEL);
+
+	// TODO: Find out how the above links to VRAM
+
+	DRM_DEBUG_KMS("Allocted memory for fbdev! sizeof(*fb) = %d, fb = %p\n", sizeof(*fb), fb);
+
 	if (fb == NULL) {
 		drm_gem_object_put(obj);
 		return ERR_PTR(-ENOMEM);

@@ -364,6 +364,8 @@ static void fb_flashcursor(struct work_struct *work)
 	/* protected by console_lock */
 	info = ops->info;
 
+	printk(KERN_INFO "fb mappable at 0x%lX\n",  info->fix.smem_start);
+
 	if (ops->currcon != -1)
 		vc = vc_cons[ops->currcon].d;
 
