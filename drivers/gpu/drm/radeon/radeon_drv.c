@@ -690,7 +690,7 @@ static int __init radeon_module_init(void)
 		return -EINVAL;
 
 	DRM_INFO("radeon kernel modesetting enabled.\n");
-	radeon_register_atpx_handler();
+	// radeon_register_atpx_handler();
 
 	return pci_register_driver(&radeon_kms_pci_driver);
 }
