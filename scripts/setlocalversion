@@ -36,6 +36,8 @@ scm_version()
 	local no_dirty=false
 	local tag
 
+	return
+
 	while [ $# -gt 0 ];
 	do
 		case "$1" in

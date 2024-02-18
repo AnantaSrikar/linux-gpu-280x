@@ -54,6 +54,74 @@
 #include "radeon_device.h"
 #include "radeon_prime.h"
 
+// Bad programming practice, don't do this, thank you. This is here purely for debugging purposes!!
+const char *radeon_family_id_to_str[] = {
+	"CHIP_R100",
+	"CHIP_RV100",
+	"CHIP_RS100",
+	"CHIP_RV200",
+	"CHIP_RS200",
+	"CHIP_R200",
+	"CHIP_RV250",
+	"CHIP_RS300",
+	"CHIP_RV280",
+	"CHIP_R300",
+	"CHIP_R350",
+	"CHIP_RV350",
+	"CHIP_RV380",
+	"CHIP_R420",
+	"CHIP_R423",
+	"CHIP_RV410",
+	"CHIP_RS400",
+	"CHIP_RS480",
+	"CHIP_RS600",
+	"CHIP_RS690",
+	"CHIP_RS740",
+	"CHIP_RV515",
+	"CHIP_R520",
+	"CHIP_RV530",
+	"CHIP_RV560",
+	"CHIP_RV570",
+	"CHIP_R580",
+	"CHIP_R600",
+	"CHIP_RV610",
+	"CHIP_RV630",
+	"CHIP_RV670",
+	"CHIP_RV620",
+	"CHIP_RV635",
+	"CHIP_RS780",
+	"CHIP_RS880",
+	"CHIP_RV770",
+	"CHIP_RV730",
+	"CHIP_RV710",
+	"CHIP_RV740",
+	"CHIP_CEDAR",
+	"CHIP_REDWOOD",
+	"CHIP_JUNIPER",
+	"CHIP_CYPRESS",
+	"CHIP_HEMLOCK",
+	"CHIP_PALM",
+	"CHIP_SUMO",
+	"CHIP_SUMO2",
+	"CHIP_BARTS",
+	"CHIP_TURKS",
+	"CHIP_CAICOS",
+	"CHIP_CAYMAN",
+	"CHIP_ARUBA",
+	"CHIP_TAHITI",
+	"CHIP_PITCAIRN",
+	"CHIP_VERDE",
+	"CHIP_OLAND",
+	"CHIP_HAINAN",
+	"CHIP_BONAIRE",
+	"CHIP_KAVERI",
+	"CHIP_KABINI",
+	"CHIP_HAWAII",
+	"CHIP_MULLINS",
+	"CHIP_LAST",
+};
+
+
 /*
  * KMS wrapper.
  * - 2.0.0 - initial interface
@@ -266,6 +334,21 @@ static int radeon_pci_probe(struct pci_dev *pdev,
 		return -ENODEV; /* Avoid NULL-ptr deref in drm_get_pci_dev */
 
 	flags = ent->driver_data;
+
+	dev_info(&pdev->dev, "flags: %lu\n", flags);
+
+	dev_info(&pdev->dev, "radeon_scratcher: %s detected on GPU!\n", radeon_family_id_to_str[flags & RADEON_FAMILY_MASK]);
+	dev_info(&pdev->dev, "radeon_scratcher: RADEON_IS_MOBILITY: %d\n", (int)(flags & RADEON_IS_MOBILITY));
+	dev_info(&pdev->dev, "radeon_scratcher: RADEON_IS_IGP: %d\n", (int)(flags & RADEON_IS_IGP));
+	dev_info(&pdev->dev, "radeon_scratcher: RADEON_SINGLE_CRTC: %d\n", (int)(flags & RADEON_SINGLE_CRTC));
+	dev_info(&pdev->dev, "radeon_scratcher: RADEON_IS_AGP: %d\n", (int)(flags & RADEON_IS_AGP));
+	dev_info(&pdev->dev, "radeon_scratcher: RADEON_HAS_HIERZ: %d\n", (int)(flags & RADEON_HAS_HIERZ));
+	dev_info(&pdev->dev, "radeon_scratcher: RADEON_IS_PCIE: %d\n", (int)(flags & RADEON_IS_PCIE));
+	dev_info(&pdev->dev, "radeon_scratcher: RADEON_NEW_MEMMAP: %d\n", (int)(flags & RADEON_NEW_MEMMAP));
+	dev_info(&pdev->dev, "radeon_scratcher: RADEON_IS_PCI: %d\n", (int)(flags & RADEON_IS_PCI));
+	dev_info(&pdev->dev, "radeon_scratcher: RADEON_IS_IGPGART: %d\n", (int)(flags & RADEON_IS_IGPGART));
+	dev_info(&pdev->dev, "radeon_scratcher: RADEON_IS_PX: %d\n", (int)(flags & RADEON_IS_PX));
+
 
 	if (!radeon_si_support) {
 		switch (flags & RADEON_FAMILY_MASK) {
