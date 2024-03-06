@@ -1314,6 +1314,10 @@ struct atom_context *atom_parse(struct card_info *card, void *bios)
 			break;
 		}
 	}
+
+	
+	dump_stack();
+
 	pr_info("ATOM BIOS: %s\n", name);
 
 	return ctx;

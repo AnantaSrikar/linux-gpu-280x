@@ -705,7 +705,7 @@ bool radeon_get_bios(struct radeon_device *rdev)
 		rdev->is_atom_bios = false;
 	}
 
-	DRM_DEBUG("%sBIOS detected\n", rdev->is_atom_bios ? "ATOM" : "COM");
+	DRM_INFO("%sBIOS detected\n", rdev->is_atom_bios ? "ATOM" : "COM");
 	return true;
 free_bios:
 	kfree(rdev->bios);

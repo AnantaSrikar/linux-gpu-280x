@@ -1404,9 +1404,14 @@ int radeon_device_init(struct radeon_device *rdev,
 	if (rdev->rmmio == NULL)
 		return -ENOMEM;
 
+	DRM_INFO("radeon_debug: Starting doorbell bas mapping!\n");
+
 	/* doorbell bar mapping */
 	if (rdev->family >= CHIP_BONAIRE)
 		radeon_doorbell_init(rdev);
+
+
+	DRM_INFO("radeon_debug: Doorbell bar mapping done!\nStarting IO Port Mapping!\n");
 
 	/* io port mapping */
 	for (i = 0; i < DEVICE_COUNT_RESOURCE; i++) {
@@ -1416,11 +1421,18 @@ int radeon_device_init(struct radeon_device *rdev,
 			break;
 		}
 	}
+
+	DRM_INFO("radeon_debug: IO Port Mapping done!\n");
+
 	if (rdev->rio_mem == NULL)
 		DRM_ERROR("Unable to find PCI I/O BAR\n");
 
 	if (rdev->flags & RADEON_IS_PX)
+	{
+		DRM_INFO("radeon_debug: Starting radeon_device_handle_px_quirks()!\n");
 		radeon_device_handle_px_quirks(rdev);
+		DRM_INFO("radeon_debug: Finished radeon_device_handle_px_quirks()!\n");
+	}
 
 	/* if we have > 1 VGA cards, then disable the radeon VGA resources */
 	/* this will fail for cards that aren't VGA class devices, just
@@ -1435,29 +1447,47 @@ int radeon_device_init(struct radeon_device *rdev,
 	if (runtime)
 		vga_switcheroo_init_domain_pm_ops(rdev->dev, &rdev->vga_pm_domain);
 
+	DRM_INFO("radeon_debug: Starting radeon_init(), actually calling cik_init()\n");
 	r = radeon_init(rdev);
 	if (r)
 		goto failed;
 
-	radeon_gem_debugfs_init(rdev);
+	// DRM_INFO("radeon_debug: Finished radeon_init()\nStarting radeon_gem_debugfs_init()!\n");
 
-	if (rdev->flags & RADEON_IS_AGP && !rdev->accel_working) {
-		/* Acceleration not working on AGP card try again
-		 * with fallback to PCI or PCIE GART
-		 */
-		radeon_asic_reset(rdev);
-		radeon_fini(rdev);
-		radeon_agp_disable(rdev);
-		r = radeon_init(rdev);
-		if (r)
-			goto failed;
-	}
+	// // radeon_gem_debugfs_init(rdev);
 
-	radeon_audio_component_init(rdev);
+	// DRM_INFO("radeon_debug: Finished radeon_gem_debugfs_init()\n");
 
-	r = radeon_ib_ring_tests(rdev);
-	if (r)
-		DRM_ERROR("ib ring test failed (%d).\n", r);
+	// if (rdev->flags & RADEON_IS_AGP && !rdev->accel_working) {
+	// 	/* Acceleration not working on AGP card try again
+	// 	 * with fallback to PCI or PCIE GART
+	// 	 */
+
+	// 	DRM_INFO("radeon_debug: Starting radeon_asic_reset()!\n");
+	// 	radeon_asic_reset(rdev);
+	// 	DRM_INFO("radeon_debug: Finished radeon_asic_reset()!\n Starting radeon_fini()!\n");
+	// 	radeon_fini(rdev);
+	// 	DRM_INFO("radeon_debug: Finished radeon_fini()!\n Starting radeon_agp_disable()!\n");
+	// 	radeon_agp_disable(rdev);
+	// 	DRM_INFO("radeon_debug: Finished radeon_agp_disable()!\n Starting radeon_init() again 2nd time!\n");
+	// 	r = radeon_init(rdev);
+	// 	DRM_INFO("radeon_debug: Finished radeon_init() second time!\n");
+		
+	// 	if (r)
+	// 		goto failed;
+	// }
+
+	// DRM_INFO("radeon_debug: radeon_audio_component_init()!\n");
+
+	// radeon_audio_component_init(rdev);
+
+	// DRM_INFO("radeon_debug: radeon_audio_component_init done!\nStarting radeon_ib_ring_tests");
+
+	// r = radeon_ib_ring_tests(rdev);
+	// if (r)
+	// 	DRM_ERROR("ib ring test failed (%d).\n", r);
+
+	// DRM_INFO("radeon_debug: radeon_ib_ring_tests done!\n");
 
 	/*
 	 * Turks/Thames GPU will freeze whole laptop if DPM is not restarted
@@ -1492,6 +1522,8 @@ int radeon_device_init(struct radeon_device *rdev,
 		else
 			DRM_INFO("radeon: acceleration disabled, skipping benchmarks\n");
 	}
+
+	DRM_INFO("radeon_debug: radeon_device_init() done!\n");
 	return 0;
 
 failed:

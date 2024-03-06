@@ -8551,135 +8551,192 @@ int cik_init(struct radeon_device *rdev)
 	struct radeon_ring *ring;
 	int r;
 
+	DRM_INFO("radeon_debug: cik_init() called!\n");
+	
+	DRM_INFO("radeon_debug: reading BIOS!\n");
+
 	/* Read BIOS */
 	if (!radeon_get_bios(rdev)) {
 		if (ASIC_IS_AVIVO(rdev))
 			return -EINVAL;
 	}
+
+	DRM_INFO("radeon_debug: Finished reading BIOS!\n");
+
 	/* Must be an ATOMBIOS */
 	if (!rdev->is_atom_bios) {
 		dev_err(rdev->dev, "Expecting atombios for cayman GPU\n");
 		return -EINVAL;
 	}
+
+	DRM_INFO("radeon_debug: Calling radeon_atombios_init()\n");
 	r = radeon_atombios_init(rdev);
 	if (r)
 		return r;
 
-	/* Post card if necessary */
-	if (!radeon_card_posted(rdev)) {
-		if (!rdev->bios) {
-			dev_err(rdev->dev, "Card not posted and no BIOS - ignoring\n");
-			return -EINVAL;
-		}
-		DRM_INFO("GPU not posted. posting now...\n");
-		atom_asic_init(rdev->mode_info.atom_context);
-	}
-	/* init golden registers */
-	cik_init_golden_registers(rdev);
-	/* Initialize scratch registers */
-	cik_scratch_init(rdev);
-	/* Initialize surface registers */
-	radeon_surface_init(rdev);
-	/* Initialize clocks */
-	radeon_get_clock_info(rdev->ddev);
+	DRM_INFO("radeon_debug: radeon_atombios_init() done!\nradeon_debug: calling radeon_card_posted()\n");
 
-	/* Fence driver */
-	radeon_fence_driver_init(rdev);
+	// /* Post card if necessary */
+	// if (!radeon_card_posted(rdev)) {
+	// 	if (!rdev->bios) {
+	// 		dev_err(rdev->dev, "Card not posted and no BIOS - ignoring\n");
+	// 		return -EINVAL;
+	// 	}
+	// 	DRM_INFO("GPU not posted. posting now...\n");
+	// 	atom_asic_init(rdev->mode_info.atom_context);
+	// }
+	
+	// DRM_INFO("radeon_debug: radeon_card_posted() done!\nradeon_debug: Initializing golden registers!!\n");
+	// /* init golden registers */
+	// cik_init_golden_registers(rdev);
+	
+	// DRM_INFO("radeon_debug: cik_init_golden_registers() done!\nradeon_debug: Calling cik_scratch_init()\n");
 
-	/* initialize memory controller */
-	r = cik_mc_init(rdev);
-	if (r)
-		return r;
-	/* Memory manager */
-	r = radeon_bo_init(rdev);
-	if (r)
-		return r;
+	// /* Initialize scratch registers */
+	// cik_scratch_init(rdev);
 
-	if (rdev->flags & RADEON_IS_IGP) {
-		if (!rdev->me_fw || !rdev->pfp_fw || !rdev->ce_fw ||
-		    !rdev->mec_fw || !rdev->sdma_fw || !rdev->rlc_fw) {
-			r = cik_init_microcode(rdev);
-			if (r) {
-				DRM_ERROR("Failed to load firmware!\n");
-				return r;
-			}
-		}
-	} else {
-		if (!rdev->me_fw || !rdev->pfp_fw || !rdev->ce_fw ||
-		    !rdev->mec_fw || !rdev->sdma_fw || !rdev->rlc_fw ||
-		    !rdev->mc_fw) {
-			r = cik_init_microcode(rdev);
-			if (r) {
-				DRM_ERROR("Failed to load firmware!\n");
-				return r;
-			}
-		}
-	}
+	// DRM_INFO("radeon_debug: cik_scratch_init() done!\nradeon_debug: Calling radeon_surface_init()\n");
 
-	/* Initialize power management */
-	radeon_pm_init(rdev);
 
-	ring = &rdev->ring[RADEON_RING_TYPE_GFX_INDEX];
-	ring->ring_obj = NULL;
-	r600_ring_init(rdev, ring, 1024 * 1024);
+	// /* Initialize surface registers */
+	// radeon_surface_init(rdev);
 
-	ring = &rdev->ring[CAYMAN_RING_TYPE_CP1_INDEX];
-	ring->ring_obj = NULL;
-	r600_ring_init(rdev, ring, 1024 * 1024);
-	r = radeon_doorbell_get(rdev, &ring->doorbell_index);
-	if (r)
-		return r;
+	// DRM_INFO("radeon_debug: radeon_surface_init() done!\nradeon_debug: Calling radeon_get_clock_info()\n");
 
-	ring = &rdev->ring[CAYMAN_RING_TYPE_CP2_INDEX];
-	ring->ring_obj = NULL;
-	r600_ring_init(rdev, ring, 1024 * 1024);
-	r = radeon_doorbell_get(rdev, &ring->doorbell_index);
-	if (r)
-		return r;
 
-	ring = &rdev->ring[R600_RING_TYPE_DMA_INDEX];
-	ring->ring_obj = NULL;
-	r600_ring_init(rdev, ring, 256 * 1024);
+	// /* Initialize clocks */
+	// radeon_get_clock_info(rdev->ddev);
 
-	ring = &rdev->ring[CAYMAN_RING_TYPE_DMA1_INDEX];
-	ring->ring_obj = NULL;
-	r600_ring_init(rdev, ring, 256 * 1024);
+	// DRM_INFO("radeon_debug: radeon_get_clock_info() done!\nradeon_debug: Calling radeon_fence_driver_init()\n");
 
-	cik_uvd_init(rdev);
-	cik_vce_init(rdev);
 
-	rdev->ih.ring_obj = NULL;
-	r600_ih_ring_init(rdev, 64 * 1024);
+	// /* Fence driver */
+	// radeon_fence_driver_init(rdev);
 
-	r = r600_pcie_gart_init(rdev);
-	if (r)
-		return r;
+	// DRM_INFO("radeon_debug: radeon_fence_driver_init() done!\nradeon_debug: Calling cik_mc_init()\n");
 
-	rdev->accel_working = true;
-	r = cik_startup(rdev);
-	if (r) {
-		dev_err(rdev->dev, "disabling GPU acceleration\n");
-		cik_cp_fini(rdev);
-		cik_sdma_fini(rdev);
-		cik_irq_fini(rdev);
-		sumo_rlc_fini(rdev);
-		cik_mec_fini(rdev);
-		radeon_wb_fini(rdev);
-		radeon_ib_pool_fini(rdev);
-		radeon_vm_manager_fini(rdev);
-		radeon_irq_kms_fini(rdev);
-		cik_pcie_gart_fini(rdev);
-		rdev->accel_working = false;
-	}
+	// /* initialize memory controller */
+	// r = cik_mc_init(rdev);
+	// if (r)
+	// 	return r;
 
-	/* Don't start up if the MC ucode is missing.
-	 * The default clocks and voltages before the MC ucode
-	 * is loaded are not suffient for advanced operations.
-	 */
-	if (!rdev->mc_fw && !(rdev->flags & RADEON_IS_IGP)) {
-		DRM_ERROR("radeon: MC ucode required for NI+.\n");
-		return -EINVAL;
-	}
+	// DRM_INFO("radeon_debug: cik_mc_init() done!\nradeon_debug: Calling radeon_bo_init()\n");
+
+	// /* Memory manager */
+	// r = radeon_bo_init(rdev);
+	// if (r)
+	// 	return r;
+
+	// DRM_INFO("radeon_debug: cik_mc_init() done!\nradeon_debug: Checking is firmware is loaded correctly!\n");
+
+	// if (rdev->flags & RADEON_IS_IGP) {
+	// 	if (!rdev->me_fw || !rdev->pfp_fw || !rdev->ce_fw ||
+	// 	    !rdev->mec_fw || !rdev->sdma_fw || !rdev->rlc_fw) {
+	// 		r = cik_init_microcode(rdev);
+	// 		if (r) {
+	// 			DRM_ERROR("Failed to load firmware!\n");
+	// 			return r;
+	// 		}
+	// 	}
+	// } else {
+	// 	if (!rdev->me_fw || !rdev->pfp_fw || !rdev->ce_fw ||
+	// 	    !rdev->mec_fw || !rdev->sdma_fw || !rdev->rlc_fw ||
+	// 	    !rdev->mc_fw) {
+
+	// 		DRM_INFO("radeon_debug: Calling cik_init_microcode() in AGP mode\n");
+	// 		r = cik_init_microcode(rdev);
+	// 		if (r) {
+	// 			DRM_ERROR("Failed to load firmware!\n");
+	// 			return r;
+	// 		}
+
+	// 		DRM_INFO("radeon_debug: cik_init_microcode() done!\n");
+	// 	}
+	// }
+
+	// DRM_INFO("radeon_debug: radeon_pm_init() called!\n");
+
+	// /* Initialize power management */
+	// radeon_pm_init(rdev);
+
+	// DRM_INFO("radeon_debug: radeon_pm_init() done!\nradeon_debug: Calling r600_ring_init()\n");
+
+	// ring = &rdev->ring[RADEON_RING_TYPE_GFX_INDEX];
+	// ring->ring_obj = NULL;
+	// r600_ring_init(rdev, ring, 1024 * 1024);
+
+	// ring = &rdev->ring[CAYMAN_RING_TYPE_CP1_INDEX];
+	// ring->ring_obj = NULL;
+	// r600_ring_init(rdev, ring, 1024 * 1024);
+	// r = radeon_doorbell_get(rdev, &ring->doorbell_index);
+	// if (r)
+	// 	return r;
+
+	// ring = &rdev->ring[CAYMAN_RING_TYPE_CP2_INDEX];
+	// ring->ring_obj = NULL;
+	// r600_ring_init(rdev, ring, 1024 * 1024);
+	// r = radeon_doorbell_get(rdev, &ring->doorbell_index);
+	// if (r)
+	// 	return r;
+
+	// ring = &rdev->ring[R600_RING_TYPE_DMA_INDEX];
+	// ring->ring_obj = NULL;
+	// r600_ring_init(rdev, ring, 256 * 1024);
+
+	// ring = &rdev->ring[CAYMAN_RING_TYPE_DMA1_INDEX];
+	// ring->ring_obj = NULL;
+	// r600_ring_init(rdev, ring, 256 * 1024);
+
+	// DRM_INFO("radeon_debug: A bunch of rings were accessed!\nradeon_debug: Calling cik_uvd_init()\n!");
+
+	// cik_uvd_init(rdev);
+
+	// DRM_INFO("radeon_debug: cik_uvd_init() done!\nradeon_debug: Calling cik_vce_init()!\n");
+	
+	// cik_vce_init(rdev);
+
+	// DRM_INFO("radeon_debug: cik_vce_init() done!\nradeon_debug: Calling r600_ih_ring_init()!\n");
+
+	// rdev->ih.ring_obj = NULL;
+	// r600_ih_ring_init(rdev, 64 * 1024);
+	
+	// DRM_INFO("radeon_debug: r600_ih_ring_init() done!\nradeon_debug: Calling r600_pcie_gart_init()!\n");
+
+	// r = r600_pcie_gart_init(rdev);
+	// if (r)
+	// 	return r;
+
+	// DRM_INFO("radeon_debug: r600_pcie_gart_init() done!\nradeon_debug: Calling cik_startup()!\n");
+
+	// rdev->accel_working = true;
+	// r = cik_startup(rdev);
+	// if (r) {
+	// 	dev_err(rdev->dev, "disabling GPU acceleration\n");
+	// 	cik_cp_fini(rdev);
+	// 	cik_sdma_fini(rdev);
+	// 	cik_irq_fini(rdev);
+	// 	sumo_rlc_fini(rdev);
+	// 	cik_mec_fini(rdev);
+	// 	radeon_wb_fini(rdev);
+	// 	radeon_ib_pool_fini(rdev);
+	// 	radeon_vm_manager_fini(rdev);
+	// 	radeon_irq_kms_fini(rdev);
+	// 	cik_pcie_gart_fini(rdev);
+	// 	rdev->accel_working = false;
+	// }
+	
+	// DRM_INFO("radeon_debug: cik_startup() done!\nradeon_debug: Checking if MC ucode is missing!\n");
+
+	// /* Don't start up if the MC ucode is missing.
+	//  * The default clocks and voltages before the MC ucode
+	//  * is loaded are not suffient for advanced operations.
+	//  */
+	// if (!rdev->mc_fw && !(rdev->flags & RADEON_IS_IGP)) {
+	// 	DRM_ERROR("radeon: MC ucode required for NI+.\n");
+	// 	return -EINVAL;
+	// }
+
+	DRM_INFO("Radeon_debug: cik_init() complete!\n");
 
 	return 0;
 }

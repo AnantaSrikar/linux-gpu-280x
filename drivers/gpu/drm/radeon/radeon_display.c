@@ -1308,7 +1308,7 @@ radeon_framebuffer_init(struct drm_device *dev,
 	drm_helper_mode_fill_fb_struct(dev, fb, mode_cmd);
 	ret = drm_framebuffer_init(dev, fb, &radeon_fb_funcs);
 
-	DRM_DEBUG_KMS("radeon_framebuffer_init: %p\n", obj);
+	DRM_INFO("radeon_framebuffer_init: %p\n", obj);
 
 	if (ret) {
 		fb->obj[0] = NULL;
@@ -1344,7 +1344,7 @@ radeon_user_framebuffer_create(struct drm_device *dev,
 
 	// TODO: Find out how the above links to VRAM
 
-	DRM_DEBUG_KMS("Allocted memory for fbdev! sizeof(*fb) = %d, fb = %p\n", sizeof(*fb), fb);
+	DRM_INFO("Allocted memory for fbdev! sizeof(*fb) = %d, fb = %p\n", sizeof(*fb), fb);
 
 	if (fb == NULL) {
 		drm_gem_object_put(obj);
@@ -1613,13 +1613,19 @@ int radeon_modeset_init(struct radeon_device *rdev)
 
 	rdev->ddev->mode_config.fb_modifiers_not_supported = true;
 
+	DRM_INFO("radeon_debug: Starting radeon_modeset_create_props!\n");
+
 	ret = radeon_modeset_create_props(rdev);
 	if (ret) {
 		return ret;
 	}
 
+	DRM_INFO("radeon_debug: Finished radeon_modeset_creat_props!\nStarting radeon_i2c_init!\n");
+
 	/* init i2c buses */
 	radeon_i2c_init(rdev);
+
+	DRM_INFO("radeon_debug: Starting radeon_modeset_create_props!\n");
 
 	/* check combios for a valid hardcoded EDID - Sun servers */
 	if (!rdev->is_atom_bios) {
@@ -1627,10 +1633,14 @@ int radeon_modeset_init(struct radeon_device *rdev)
 		radeon_combios_check_hardcoded_edid(rdev);
 	}
 
+	DRM_INFO("radeon_debug: Allocating crtcs radeon_crtc_init!\n");
+
 	/* allocate crtcs */
 	for (i = 0; i < rdev->num_crtc; i++) {
 		radeon_crtc_init(rdev->ddev, i);
 	}
+
+	DRM_INFO("radeon_debug: Finished radeon_crtc_inits!\nGetting all BIOS connectors now!\n");
 
 	/* okay we should have all the bios connectors */
 	ret = radeon_setup_enc_conn(rdev->ddev);
@@ -1638,22 +1648,28 @@ int radeon_modeset_init(struct radeon_device *rdev)
 		return ret;
 	}
 
+	DRM_INFO("radeon_debug: /* init dig PHYs, disp eng pll */\n");
+
 	/* init dig PHYs, disp eng pll */
 	if (rdev->is_atom_bios) {
 		radeon_atom_encoder_init(rdev);
 		radeon_atom_disp_eng_pll_init(rdev);
 	}
 
-	/* initialize hpd */
+	// initialize hpd (Hot Plug detect)
 	radeon_hpd_init(rdev);
 
-	/* setup afmt */
+	// setup afmt (Audio Format)
 	radeon_afmt_init(rdev);
 
 	drm_kms_helper_poll_init(rdev->ddev);
 
+	DRM_INFO("radeon_debug: Starting radeon_pm_late_init!\n");
+
 	/* do pm late init */
 	ret = radeon_pm_late_init(rdev);
+
+	DRM_INFO("radeon_debug: radeon_pm_late_init() done!\n");
 
 	return 0;
 }
