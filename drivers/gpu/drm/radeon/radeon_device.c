@@ -1298,7 +1298,7 @@ int radeon_device_init(struct radeon_device *rdev,
 	for (i = 0; i < RADEON_NUM_RINGS; i++) {
 		rdev->ring[i].idx = i;
 	}
-	rdev->fence_context = dma_fence_context_alloc(RADEON_NUM_RINGS);
+	// rdev->fence_context = dma_fence_context_alloc(RADEON_NUM_RINGS);
 
 	DRM_INFO("initializing kernel modesetting (%s 0x%04X:0x%04X 0x%04X:0x%04X 0x%02X).\n",
 		 radeon_family_name[rdev->family], pdev->vendor, pdev->device,
@@ -1306,22 +1306,22 @@ int radeon_device_init(struct radeon_device *rdev,
 
 	/* mutex initialization are all done here so we
 	 * can recall function without having locking issues */
-	mutex_init(&rdev->ring_lock);
-	mutex_init(&rdev->dc_hw_i2c_mutex);
-	atomic_set(&rdev->ih.lock, 0);
-	mutex_init(&rdev->gem.mutex);
-	mutex_init(&rdev->pm.mutex);
-	mutex_init(&rdev->gpu_clock_mutex);
-	mutex_init(&rdev->srbm_mutex);
-	mutex_init(&rdev->audio.component_mutex);
-	init_rwsem(&rdev->pm.mclk_lock);
-	init_rwsem(&rdev->exclusive_lock);
-	init_waitqueue_head(&rdev->irq.vblank_queue);
+	// mutex_init(&rdev->ring_lock);
+	// mutex_init(&rdev->dc_hw_i2c_mutex);
+	// atomic_set(&rdev->ih.lock, 0);
+	// mutex_init(&rdev->gem.mutex);
+	// mutex_init(&rdev->pm.mutex);
+	// mutex_init(&rdev->gpu_clock_mutex);
+	// mutex_init(&rdev->srbm_mutex);
+	// mutex_init(&rdev->audio.component_mutex);
+	// init_rwsem(&rdev->pm.mclk_lock);
+	// init_rwsem(&rdev->exclusive_lock);
+	// init_waitqueue_head(&rdev->irq.vblank_queue);
 	r = radeon_gem_init(rdev);
-	if (r)
-		return r;
+	// if (r)
+	// 	return r;
 
-	radeon_check_arguments(rdev);
+	// radeon_check_arguments(rdev);
 	/* Adjust VM size here.
 	 * Max GPUVM size for cayman+ is 40 bits.
 	 */
@@ -1335,14 +1335,14 @@ int radeon_device_init(struct radeon_device *rdev,
 	/* all of the newer IGP chips have an internal gart
 	 * However some rs4xx report as AGP, so remove that here.
 	 */
-	if ((rdev->family >= CHIP_RS400) &&
-	    (rdev->flags & RADEON_IS_IGP)) {
-		rdev->flags &= ~RADEON_IS_AGP;
-	}
+	// if ((rdev->family >= CHIP_RS400) &&
+	//     (rdev->flags & RADEON_IS_IGP)) {
+	// 	rdev->flags &= ~RADEON_IS_AGP;
+	// }
 
-	if (rdev->flags & RADEON_IS_AGP && radeon_agpmode == -1) {
-		radeon_agp_disable(rdev);
-	}
+	// if (rdev->flags & RADEON_IS_AGP && radeon_agpmode == -1) {
+	// 	radeon_agp_disable(rdev);
+	// }
 
 	/* Set the internal MC address mask
 	 * This is the max address of the GPU's
@@ -1361,38 +1361,38 @@ int radeon_device_init(struct radeon_device *rdev,
 	 * AGP - generally dma32 is safest
 	 * PCI - dma32 for legacy pci gart, 40 bits on newer asics
 	 */
-	dma_bits = 40;
-	if (rdev->flags & RADEON_IS_AGP)
-		dma_bits = 32;
-	if ((rdev->flags & RADEON_IS_PCI) &&
-	    (rdev->family <= CHIP_RS740))
-		dma_bits = 32;
-#ifdef CONFIG_PPC64
-	if (rdev->family == CHIP_CEDAR)
-		dma_bits = 32;
-#endif
+// 	dma_bits = 40;
+// 	if (rdev->flags & RADEON_IS_AGP)
+// 		dma_bits = 32;
+// 	if ((rdev->flags & RADEON_IS_PCI) &&
+// 	    (rdev->family <= CHIP_RS740))
+// 		dma_bits = 32;
+// #ifdef CONFIG_PPC64
+// 	if (rdev->family == CHIP_CEDAR)
+// 		dma_bits = 32;
+// #endif
 
-	r = dma_set_mask_and_coherent(&rdev->pdev->dev, DMA_BIT_MASK(dma_bits));
-	if (r) {
-		pr_warn("radeon: No suitable DMA available\n");
-		return r;
-	}
-	rdev->need_swiotlb = drm_need_swiotlb(dma_bits);
+	// r = dma_set_mask_and_coherent(&rdev->pdev->dev, DMA_BIT_MASK(dma_bits));
+	// if (r) {
+	// 	pr_warn("radeon: No suitable DMA available\n");
+	// 	return r;
+	// }
+	// rdev->need_swiotlb = drm_need_swiotlb(dma_bits);
 
 	/* Registers mapping */
 	/* TODO: block userspace mapping of io register */
-	spin_lock_init(&rdev->mmio_idx_lock);
-	spin_lock_init(&rdev->smc_idx_lock);
-	spin_lock_init(&rdev->pll_idx_lock);
-	spin_lock_init(&rdev->mc_idx_lock);
-	spin_lock_init(&rdev->pcie_idx_lock);
-	spin_lock_init(&rdev->pciep_idx_lock);
-	spin_lock_init(&rdev->pif_idx_lock);
-	spin_lock_init(&rdev->cg_idx_lock);
-	spin_lock_init(&rdev->uvd_idx_lock);
-	spin_lock_init(&rdev->rcu_idx_lock);
-	spin_lock_init(&rdev->didt_idx_lock);
-	spin_lock_init(&rdev->end_idx_lock);
+	// spin_lock_init(&rdev->mmio_idx_lock);
+	// spin_lock_init(&rdev->smc_idx_lock);
+	// spin_lock_init(&rdev->pll_idx_lock);
+	// spin_lock_init(&rdev->mc_idx_lock);
+	// spin_lock_init(&rdev->pcie_idx_lock);
+	// spin_lock_init(&rdev->pciep_idx_lock);
+	// spin_lock_init(&rdev->pif_idx_lock);
+	// spin_lock_init(&rdev->cg_idx_lock);
+	// spin_lock_init(&rdev->uvd_idx_lock);
+	// spin_lock_init(&rdev->rcu_idx_lock);
+	// spin_lock_init(&rdev->didt_idx_lock);
+	// spin_lock_init(&rdev->end_idx_lock);
 	if (rdev->family >= CHIP_BONAIRE) {
 		rdev->rmmio_base = pci_resource_start(rdev->pdev, 5);
 		rdev->rmmio_size = pci_resource_len(rdev->pdev, 5);
@@ -1404,11 +1404,11 @@ int radeon_device_init(struct radeon_device *rdev,
 	if (rdev->rmmio == NULL)
 		return -ENOMEM;
 
-	DRM_INFO("radeon_debug: Starting doorbell bas mapping!\n");
+	// DRM_INFO("radeon_debug: Starting doorbell bas mapping!\n");
 
 	/* doorbell bar mapping */
-	if (rdev->family >= CHIP_BONAIRE)
-		radeon_doorbell_init(rdev);
+	// if (rdev->family >= CHIP_BONAIRE)
+	// 	radeon_doorbell_init(rdev);
 
 
 	DRM_INFO("radeon_debug: Doorbell bar mapping done!\nStarting IO Port Mapping!\n");
@@ -1427,25 +1427,25 @@ int radeon_device_init(struct radeon_device *rdev,
 	if (rdev->rio_mem == NULL)
 		DRM_ERROR("Unable to find PCI I/O BAR\n");
 
-	if (rdev->flags & RADEON_IS_PX)
-	{
-		DRM_INFO("radeon_debug: Starting radeon_device_handle_px_quirks()!\n");
-		radeon_device_handle_px_quirks(rdev);
-		DRM_INFO("radeon_debug: Finished radeon_device_handle_px_quirks()!\n");
-	}
+	// if (rdev->flags & RADEON_IS_PX)
+	// {
+	// 	DRM_INFO("radeon_debug: Starting radeon_device_handle_px_quirks()!\n");
+	// 	radeon_device_handle_px_quirks(rdev);
+	// 	DRM_INFO("radeon_debug: Finished radeon_device_handle_px_quirks()!\n");
+	// }
 
 	/* if we have > 1 VGA cards, then disable the radeon VGA resources */
 	/* this will fail for cards that aren't VGA class devices, just
 	 * ignore it */
-	vga_client_register(rdev->pdev, radeon_vga_set_decode);
+	// vga_client_register(rdev->pdev, radeon_vga_set_decode);
 
-	if (rdev->flags & RADEON_IS_PX)
-		runtime = true;
-	if (!pci_is_thunderbolt_attached(rdev->pdev))
-		vga_switcheroo_register_client(rdev->pdev,
-					       &radeon_switcheroo_ops, runtime);
-	if (runtime)
-		vga_switcheroo_init_domain_pm_ops(rdev->dev, &rdev->vga_pm_domain);
+	// if (rdev->flags & RADEON_IS_PX)
+	// 	runtime = true;
+	// if (!pci_is_thunderbolt_attached(rdev->pdev))
+	// 	vga_switcheroo_register_client(rdev->pdev,
+	// 				       &radeon_switcheroo_ops, runtime);
+	// if (runtime)
+	// 	vga_switcheroo_init_domain_pm_ops(rdev->dev, &rdev->vga_pm_domain);
 
 	DRM_INFO("radeon_debug: Starting radeon_init(), actually calling cik_init()\n");
 	r = radeon_init(rdev);
@@ -1454,7 +1454,7 @@ int radeon_device_init(struct radeon_device *rdev,
 
 	// DRM_INFO("radeon_debug: Finished radeon_init()\nStarting radeon_gem_debugfs_init()!\n");
 
-	// // radeon_gem_debugfs_init(rdev);
+	// radeon_gem_debugfs_init(rdev);
 
 	// DRM_INFO("radeon_debug: Finished radeon_gem_debugfs_init()\n");
 
@@ -1494,34 +1494,34 @@ int radeon_device_init(struct radeon_device *rdev,
 	 * after the CP ring have chew one packet at least. Hence here we stop
 	 * and restart DPM after the radeon_ib_ring_tests().
 	 */
-	if (rdev->pm.dpm_enabled &&
-	    (rdev->pm.pm_method == PM_METHOD_DPM) &&
-	    (rdev->family == CHIP_TURKS) &&
-	    (rdev->flags & RADEON_IS_MOBILITY)) {
-		mutex_lock(&rdev->pm.mutex);
-		radeon_dpm_disable(rdev);
-		radeon_dpm_enable(rdev);
-		mutex_unlock(&rdev->pm.mutex);
-	}
+	// if (rdev->pm.dpm_enabled &&
+	//     (rdev->pm.pm_method == PM_METHOD_DPM) &&
+	//     (rdev->family == CHIP_TURKS) &&
+	//     (rdev->flags & RADEON_IS_MOBILITY)) {
+	// 	mutex_lock(&rdev->pm.mutex);
+	// 	radeon_dpm_disable(rdev);
+	// 	radeon_dpm_enable(rdev);
+	// 	mutex_unlock(&rdev->pm.mutex);
+	// }
 
-	if ((radeon_testing & 1)) {
-		if (rdev->accel_working)
-			radeon_test_moves(rdev);
-		else
-			DRM_INFO("radeon: acceleration disabled, skipping move tests\n");
-	}
-	if ((radeon_testing & 2)) {
-		if (rdev->accel_working)
-			radeon_test_syncing(rdev);
-		else
-			DRM_INFO("radeon: acceleration disabled, skipping sync tests\n");
-	}
-	if (radeon_benchmarking) {
-		if (rdev->accel_working)
-			radeon_benchmark(rdev, radeon_benchmarking);
-		else
-			DRM_INFO("radeon: acceleration disabled, skipping benchmarks\n");
-	}
+	// if ((radeon_testing & 1)) {
+	// 	if (rdev->accel_working)
+	// 		radeon_test_moves(rdev);
+	// 	else
+	// 		DRM_INFO("radeon: acceleration disabled, skipping move tests\n");
+	// }
+	// if ((radeon_testing & 2)) {
+	// 	if (rdev->accel_working)
+	// 		radeon_test_syncing(rdev);
+	// 	else
+	// 		DRM_INFO("radeon: acceleration disabled, skipping sync tests\n");
+	// }
+	// if (radeon_benchmarking) {
+	// 	if (rdev->accel_working)
+	// 		radeon_benchmark(rdev, radeon_benchmarking);
+	// 	else
+	// 		DRM_INFO("radeon: acceleration disabled, skipping benchmarks\n");
+	// }
 
 	DRM_INFO("radeon_debug: radeon_device_init() done!\n");
 	return 0;

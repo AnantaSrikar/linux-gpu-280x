@@ -397,7 +397,7 @@ static int radeon_pci_probe(struct pci_dev *pdev,
 	if (ret)
 		goto err_agp;
 
-	// radeon_fbdev_setup(dev->dev_private);
+	radeon_fbdev_setup(dev->dev_private);
 
 	return 0;
 

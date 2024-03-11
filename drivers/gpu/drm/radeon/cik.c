@@ -8592,7 +8592,7 @@ int cik_init(struct radeon_device *rdev)
 	
 	// DRM_INFO("radeon_debug: cik_init_golden_registers() done!\nradeon_debug: Calling cik_scratch_init()\n");
 
-	// /* Initialize scratch registers */
+	/* Initialize scratch registers */
 	// cik_scratch_init(rdev);
 
 	// DRM_INFO("radeon_debug: cik_scratch_init() done!\nradeon_debug: Calling radeon_surface_init()\n");
@@ -8601,13 +8601,13 @@ int cik_init(struct radeon_device *rdev)
 	// /* Initialize surface registers */
 	// radeon_surface_init(rdev);
 
-	// DRM_INFO("radeon_debug: radeon_surface_init() done!\nradeon_debug: Calling radeon_get_clock_info()\n");
+	DRM_INFO("radeon_debug: radeon_surface_init() done!\nradeon_debug: Calling radeon_get_clock_info()\n");
 
 
-	// /* Initialize clocks */
-	// radeon_get_clock_info(rdev->ddev);
+	/* Initialize clocks */
+	radeon_get_clock_info(rdev->ddev);
 
-	// DRM_INFO("radeon_debug: radeon_get_clock_info() done!\nradeon_debug: Calling radeon_fence_driver_init()\n");
+	DRM_INFO("radeon_debug: radeon_get_clock_info() done!\nradeon_debug: Calling radeon_fence_driver_init()\n");
 
 
 	// /* Fence driver */
@@ -8615,17 +8615,17 @@ int cik_init(struct radeon_device *rdev)
 
 	// DRM_INFO("radeon_debug: radeon_fence_driver_init() done!\nradeon_debug: Calling cik_mc_init()\n");
 
-	// /* initialize memory controller */
-	// r = cik_mc_init(rdev);
-	// if (r)
-	// 	return r;
+	/* initialize memory controller */
+	r = cik_mc_init(rdev);
+	if (r)
+		return r;
 
-	// DRM_INFO("radeon_debug: cik_mc_init() done!\nradeon_debug: Calling radeon_bo_init()\n");
+	DRM_INFO("radeon_debug: cik_mc_init() done!\nradeon_debug: Calling radeon_bo_init()\n");
 
-	// /* Memory manager */
-	// r = radeon_bo_init(rdev);
-	// if (r)
-	// 	return r;
+	/* Memory manager */
+	r = radeon_bo_init(rdev);
+	if (r)
+		return r;
 
 	// DRM_INFO("radeon_debug: cik_mc_init() done!\nradeon_debug: Checking is firmware is loaded correctly!\n");
 
@@ -8656,7 +8656,7 @@ int cik_init(struct radeon_device *rdev)
 
 	// DRM_INFO("radeon_debug: radeon_pm_init() called!\n");
 
-	// /* Initialize power management */
+	/* Initialize power management */
 	// radeon_pm_init(rdev);
 
 	// DRM_INFO("radeon_debug: radeon_pm_init() done!\nradeon_debug: Calling r600_ring_init()\n");

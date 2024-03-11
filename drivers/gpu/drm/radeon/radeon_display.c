@@ -1643,33 +1643,35 @@ int radeon_modeset_init(struct radeon_device *rdev)
 	DRM_INFO("radeon_debug: Finished radeon_crtc_inits!\nGetting all BIOS connectors now!\n");
 
 	/* okay we should have all the bios connectors */
+	// Important for CRTCs and sizes!
 	ret = radeon_setup_enc_conn(rdev->ddev);
 	if (!ret) {
 		return ret;
 	}
 
-	DRM_INFO("radeon_debug: /* init dig PHYs, disp eng pll */\n");
+	// DRM_INFO("radeon_debug: /* init dig PHYs, disp eng pll */\n");
 
-	/* init dig PHYs, disp eng pll */
-	if (rdev->is_atom_bios) {
-		radeon_atom_encoder_init(rdev);
-		radeon_atom_disp_eng_pll_init(rdev);
-	}
+	// /* init dig PHYs, disp eng pll */
+	// if (rdev->is_atom_bios) {
+	// 	radeon_atom_encoder_init(rdev);
+	// 	radeon_atom_disp_eng_pll_init(rdev);
+	// }
 
-	// initialize hpd (Hot Plug detect)
-	radeon_hpd_init(rdev);
+	// // initialize hpd (Hot Plug detect)
+	// radeon_hpd_init(rdev);
 
-	// setup afmt (Audio Format)
-	radeon_afmt_init(rdev);
+	// // setup afmt (Audio Format)
+	// radeon_afmt_init(rdev);
 
-	drm_kms_helper_poll_init(rdev->ddev);
+	// drm_kms_helper_poll_init(rdev->ddev);
 
-	DRM_INFO("radeon_debug: Starting radeon_pm_late_init!\n");
+	// DRM_INFO("radeon_debug: Starting radeon_pm_late_init!\n");
 
-	/* do pm late init */
-	ret = radeon_pm_late_init(rdev);
+	// /* do pm late init */
+	// ret = radeon_pm_late_init(rdev);
 
-	DRM_INFO("radeon_debug: radeon_pm_late_init() done!\n");
+	// DRM_INFO("radeon_debug: radeon_pm_late_init() done!\n");
+	DRM_INFO("radeon_debug: radeon_modeset_init() done!\n");
 
 	return 0;
 }

@@ -104,7 +104,7 @@ done_free:
 int radeon_driver_load_kms(struct drm_device *dev, unsigned long flags)
 {
 	struct pci_dev *pdev = to_pci_dev(dev->dev);
-	struct radeon_device *rdev;
+	struct radeon_device *rdev;	// rdev is being created here for the first time!!
 	int r, acpi_status;
 
 	rdev = kzalloc(sizeof(struct radeon_device), GFP_KERNEL);
@@ -157,13 +157,13 @@ int radeon_driver_load_kms(struct drm_device *dev, unsigned long flags)
 	 * otherwise it should provide enough functionalities
 	 * for shadowfb to run
 	 */
-	// r = radeon_modeset_init(rdev);
-	// if (r)
-	// 	dev_err(dev->dev, "Fatal error during modeset init\n");
+	r = radeon_modeset_init(rdev);
+	if (r)
+		dev_err(dev->dev, "Fatal error during modeset init\n");
 
-	// /* Call ACPI methods: require modeset init
-	//  * but failure is not fatal
-	//  */
+	/* Call ACPI methods: require modeset init
+	 * but failure is not fatal
+	 */
 	// if (!r) {
 	// 	acpi_status = radeon_acpi_init(rdev);
 	// 	if (acpi_status)
