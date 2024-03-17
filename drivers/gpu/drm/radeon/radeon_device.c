@@ -998,14 +998,14 @@ int radeon_atombios_init(struct radeon_device *rdev)
 	atom_card_info->pll_write = cail_pll_write;
 
 	rdev->mode_info.atom_context = atom_parse(atom_card_info, rdev->bios);
-	if (!rdev->mode_info.atom_context) {
-		radeon_atombios_fini(rdev);
-		return -ENOMEM;
-	}
+	// if (!rdev->mode_info.atom_context) {
+	// 	radeon_atombios_fini(rdev);
+	// 	return -ENOMEM;
+	// }
 
-	mutex_init(&rdev->mode_info.atom_context->mutex);
-	mutex_init(&rdev->mode_info.atom_context->scratch_mutex);
-	radeon_atom_initialize_bios_scratch_regs(rdev->ddev);
+	// mutex_init(&rdev->mode_info.atom_context->mutex);
+	// mutex_init(&rdev->mode_info.atom_context->scratch_mutex);
+	// radeon_atom_initialize_bios_scratch_regs(rdev->ddev);
 	atom_allocate_fb_scratch(rdev->mode_info.atom_context);
 	return 0;
 }
@@ -1328,7 +1328,7 @@ int radeon_device_init(struct radeon_device *rdev,
 	rdev->vm_manager.max_pfn = radeon_vm_size << 18;
 
 	/* Set asic functions */
-	r = radeon_asic_init(rdev);
+	r = radeon_asic_init(rdev); // Only need to set ci_asic()
 	if (r)
 		return r;
 

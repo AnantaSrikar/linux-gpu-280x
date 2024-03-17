@@ -197,7 +197,10 @@ static bool radeon_atrm_get_bios(struct radeon_device *rdev)
 
 	/* ATRM is for the discrete card only */
 	if (rdev->flags & RADEON_IS_IGP)
+	{
+		DRM_INFO("radeon_debug: ATRM is for discrete card only, returning false!\n");
 		return false;
+	}
 
 	while ((pdev = pci_get_base_class(PCI_BASE_CLASS_DISPLAY, pdev))) {
 		if ((pdev->class != PCI_CLASS_DISPLAY_VGA << 8) &&
@@ -216,7 +219,10 @@ static bool radeon_atrm_get_bios(struct radeon_device *rdev)
 	}
 
 	if (!found)
+	{
+		DRM_INFO("radeon_debug: didn't find something related to ACPI_HANDLE, returning false!\n");
 		return false;
+	}
 	pci_dev_put(pdev);
 
 	rdev->bios = kmalloc(size, GFP_KERNEL);
@@ -243,6 +249,7 @@ static bool radeon_atrm_get_bios(struct radeon_device *rdev)
 #else
 static inline bool radeon_atrm_get_bios(struct radeon_device *rdev)
 {
+	DRM_INFO("radeon_debug: directly returning false!\n");
 	return false;
 }
 #endif
@@ -666,17 +673,32 @@ bool radeon_get_bios(struct radeon_device *rdev)
 	bool r;
 	uint16_t tmp;
 
-	r = radeon_atrm_get_bios(rdev);
-	if (!r)
-		r = radeon_acpi_vfct_bios(rdev);
-	if (!r)
-		r = igp_read_bios_from_vram(rdev);
-	if (!r)
+	// r = radeon_atrm_get_bios(rdev);
+	// if (!r)
+	// {
+	// 	DRM_INFO("radeon_debug: running radeon_acpi_vfct_bios\n");
+	// 	r = radeon_acpi_vfct_bios(rdev);
+	// }
+	// if (!r)
+	// {
+	// 	DRM_INFO("radeon_debug: running igp_read_bios_from_vram\n");
+	// 	r = igp_read_bios_from_vram(rdev);
+	// }
+	// if (!r)
+	// {
+		DRM_INFO("radeon_debug: running radeon_read_bios\n");
 		r = radeon_read_bios(rdev);
+	// }
 	if (!r)
+	{
+		DRM_INFO("radeon_debug: running radeon_read_disabled_bios\n");
 		r = radeon_read_disabled_bios(rdev);
+	}
 	if (!r)
+	{
+		DRM_INFO("radeon_debug: running radeon_read_platform_bios\n");
 		r = radeon_read_platform_bios(rdev);
+	}
 	if (!r || rdev->bios == NULL) {
 		DRM_ERROR("Unable to locate a BIOS ROM\n");
 		rdev->bios = NULL;

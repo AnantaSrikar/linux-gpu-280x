@@ -113,33 +113,33 @@ int radeon_driver_load_kms(struct drm_device *dev, unsigned long flags)
 	}
 	dev->dev_private = (void *)rdev;
 
-#ifdef __alpha__
-	rdev->hose = pdev->sysdata;
-#endif
+// #ifdef __alpha__
+// 	rdev->hose = pdev->sysdata;
+// #endif
 
-	if (pci_find_capability(pdev, PCI_CAP_ID_AGP))
-		rdev->agp = radeon_agp_head_init(dev);
-	if (rdev->agp) {
-		rdev->agp->agp_mtrr = arch_phys_wc_add(
-			rdev->agp->agp_info.aper_base,
-			rdev->agp->agp_info.aper_size *
-			1024 * 1024);
-	}
+// 	if (pci_find_capability(pdev, PCI_CAP_ID_AGP))
+// 		rdev->agp = radeon_agp_head_init(dev);
+// 	if (rdev->agp) {
+// 		rdev->agp->agp_mtrr = arch_phys_wc_add(
+// 			rdev->agp->agp_info.aper_base,
+// 			rdev->agp->agp_info.aper_size *
+// 			1024 * 1024);
+// 	}
 
 	/* update BUS flag */
-	if (pci_find_capability(pdev, PCI_CAP_ID_AGP)) {
-		flags |= RADEON_IS_AGP;
-	} else if (pci_is_pcie(pdev)) {
-		flags |= RADEON_IS_PCIE;
-	} else {
-		flags |= RADEON_IS_PCI;
-	}
+	// if (pci_find_capability(pdev, PCI_CAP_ID_AGP)) {
+	// 	flags |= RADEON_IS_AGP;
+	// } else if (pci_is_pcie(pdev)) {
+	// 	flags |= RADEON_IS_PCIE;
+	// } else {
+	// 	flags |= RADEON_IS_PCI;
+	// }
 
-	if ((radeon_runtime_pm != 0) &&
-	    radeon_has_atpx() &&
-	    ((flags & RADEON_IS_IGP) == 0) &&
-	    !pci_is_thunderbolt_attached(pdev))
-		flags |= RADEON_IS_PX;
+	// if ((radeon_runtime_pm != 0) &&
+	//     radeon_has_atpx() &&
+	//     ((flags & RADEON_IS_IGP) == 0) &&
+	//     !pci_is_thunderbolt_attached(pdev))
+	// 	flags |= RADEON_IS_PX;
 
 	/* radeon_device_init should report only fatal error
 	 * like memory allocation failure or iomapping failure,
