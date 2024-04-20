@@ -510,6 +510,8 @@ static struct ttm_tt *radeon_ttm_tt_create(struct ttm_buffer_object *bo,
 	else
 		caching = ttm_cached;
 
+	DRM_INFO("radeon_debug: caching: %d, page_flags: %d\n", caching, page_flags);
+
 	if (ttm_sg_tt_init(&gtt->ttm, bo, page_flags, caching)) {
 		kfree(gtt);
 		return NULL;

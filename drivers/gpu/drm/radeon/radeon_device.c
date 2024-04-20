@@ -1377,7 +1377,7 @@ int radeon_device_init(struct radeon_device *rdev,
 	// 	pr_warn("radeon: No suitable DMA available\n");
 	// 	return r;
 	// }
-	// rdev->need_swiotlb = drm_need_swiotlb(dma_bits);
+	rdev->need_swiotlb = drm_need_swiotlb(dma_bits);
 
 	/* Registers mapping */
 	/* TODO: block userspace mapping of io register */

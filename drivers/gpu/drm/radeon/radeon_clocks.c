@@ -177,6 +177,38 @@ static bool radeon_read_clocks_OF(struct drm_device *dev)
 }
 #endif /* CONFIG_OF */
 
+void print_clock_info(struct radeon_pll *cur_pll)
+{
+	/* fixed dividers */
+	DRM_INFO("radeon_debug: reference_div = %x\n", cur_pll->reference_div);
+	DRM_INFO("radeon_debug: post_div = %x\n", cur_pll->post_div);
+
+	/* pll in/out limits */
+	DRM_INFO("radeon_debug: pll_in_min = %x\n", cur_pll->pll_in_min);
+	DRM_INFO("radeon_debug: pll_in_max = %x\n", cur_pll->pll_in_max);
+	DRM_INFO("radeon_debug: pll_out_min = %x\n", cur_pll->pll_out_min);
+	DRM_INFO("radeon_debug: pll_out_max = %x\n", cur_pll->pll_out_max);
+	DRM_INFO("radeon_debug: lcd_pll_out_min = %x\n", cur_pll->lcd_pll_out_min);
+	DRM_INFO("radeon_debug: lcd_pll_out_max = %x\n", cur_pll->lcd_pll_out_max);
+	DRM_INFO("radeon_debug: best_vco = %x\n", cur_pll->best_vco);
+
+	/* divider limits */
+	DRM_INFO("radeon_debug: min_ref_div = %x\n", cur_pll->min_ref_div);
+	DRM_INFO("radeon_debug: max_ref_div = %x\n", cur_pll->max_ref_div);
+	DRM_INFO("radeon_debug: min_post_div = %x\n", cur_pll->min_post_div);
+	DRM_INFO("radeon_debug: max_post_div = %x\n", cur_pll->max_post_div);
+	DRM_INFO("radeon_debug: min_feedback_div = %x\n", cur_pll->min_feedback_div);
+	DRM_INFO("radeon_debug: max_feedback_div = %x\n", cur_pll->max_feedback_div);
+	DRM_INFO("radeon_debug: min_frac_feedback_div = %x\n", cur_pll->min_frac_feedback_div);
+	DRM_INFO("radeon_debug: max_frac_feedback_div = %x\n", cur_pll->max_frac_feedback_div);
+
+	/* flags for the current clock */
+	DRM_INFO("radeon_debug: flags = %x\n", cur_pll->flags);
+
+	/* pll id */
+	DRM_INFO("radeon_debug: id = %x\n\n", cur_pll->id);
+}
+
 void radeon_get_clock_info(struct drm_device *dev)
 {
 	struct radeon_device *rdev = dev->dev_private;
@@ -336,6 +368,12 @@ void radeon_get_clock_info(struct drm_device *dev)
 	mpll->min_feedback_div = 4;
 	mpll->max_feedback_div = 0xff;
 	mpll->best_vco = 0;
+
+	print_clock_info(p1pll);
+	print_clock_info(p2pll);
+	print_clock_info(dcpll);
+	print_clock_info(spll);
+	print_clock_info(mpll);
 
 	if (!rdev->clock.default_sclk)
 		rdev->clock.default_sclk = radeon_get_engine_clock(rdev);
