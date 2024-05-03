@@ -6824,40 +6824,54 @@ int si_init(struct radeon_device *rdev)
 	struct radeon_ring *ring = &rdev->ring[RADEON_RING_TYPE_GFX_INDEX];
 	int r;
 
+	DRM_INFO("radeon_debug: cik_init() called!\n");
+	
+	DRM_INFO("radeon_debug: reading BIOS!\n");
+
 	/* Read BIOS */
 	if (!radeon_get_bios(rdev)) {
 		if (ASIC_IS_AVIVO(rdev))
 			return -EINVAL;
 	}
+
+	DRM_INFO("radeon_debug: Finished reading BIOS!\n");
+
 	/* Must be an ATOMBIOS */
 	if (!rdev->is_atom_bios) {
 		dev_err(rdev->dev, "Expecting atombios for cayman GPU\n");
 		return -EINVAL;
 	}
+
+	DRM_INFO("radeon_debug: Calling radeon_atombios_init()\n");
+
 	r = radeon_atombios_init(rdev);
 	if (r)
 		return r;
 
-	/* Post card if necessary */
-	if (!radeon_card_posted(rdev)) {
-		if (!rdev->bios) {
-			dev_err(rdev->dev, "Card not posted and no BIOS - ignoring\n");
-			return -EINVAL;
-		}
-		DRM_INFO("GPU not posted. posting now...\n");
-		atom_asic_init(rdev->mode_info.atom_context);
-	}
+	// /* Post card if necessary */
+	// if (!radeon_card_posted(rdev)) {
+	// 	if (!rdev->bios) {
+	// 		dev_err(rdev->dev, "Card not posted and no BIOS - ignoring\n");
+	// 		return -EINVAL;
+	// 	}
+	// 	DRM_INFO("GPU not posted. posting now...\n");
+	// 	atom_asic_init(rdev->mode_info.atom_context);
+	// }
 	/* init golden registers */
-	si_init_golden_registers(rdev);
-	/* Initialize scratch registers */
-	si_scratch_init(rdev);
-	/* Initialize surface registers */
-	radeon_surface_init(rdev);
+	// si_init_golden_registers(rdev);
+	// /* Initialize scratch registers */
+	// si_scratch_init(rdev);
+	// /* Initialize surface registers */
+	// radeon_surface_init(rdev);
+
+	DRM_INFO("radeon_debug: Calling radeon_get_clock_info()\n");
 	/* Initialize clocks */
 	radeon_get_clock_info(rdev->ddev);
 
-	/* Fence driver */
-	radeon_fence_driver_init(rdev);
+	DRM_INFO("radeon_debug: radeon_get_clock_info() done!\n");
+
+	// /* Fence driver */
+	// radeon_fence_driver_init(rdev);
 
 	/* initialize memory controller */
 	r = si_mc_init(rdev);
@@ -6868,72 +6882,72 @@ int si_init(struct radeon_device *rdev)
 	if (r)
 		return r;
 
-	if (!rdev->me_fw || !rdev->pfp_fw || !rdev->ce_fw ||
-	    !rdev->rlc_fw || !rdev->mc_fw) {
-		r = si_init_microcode(rdev);
-		if (r) {
-			DRM_ERROR("Failed to load firmware!\n");
-			return r;
-		}
-	}
+	// if (!rdev->me_fw || !rdev->pfp_fw || !rdev->ce_fw ||
+	//     !rdev->rlc_fw || !rdev->mc_fw) {
+	// 	r = si_init_microcode(rdev);
+	// 	if (r) {
+	// 		DRM_ERROR("Failed to load firmware!\n");
+	// 		return r;
+	// 	}
+	// }
 
-	/* Initialize power management */
-	radeon_pm_init(rdev);
+	// /* Initialize power management */
+	// radeon_pm_init(rdev);
 
-	ring = &rdev->ring[RADEON_RING_TYPE_GFX_INDEX];
-	ring->ring_obj = NULL;
-	r600_ring_init(rdev, ring, 1024 * 1024);
+	// ring = &rdev->ring[RADEON_RING_TYPE_GFX_INDEX];
+	// ring->ring_obj = NULL;
+	// r600_ring_init(rdev, ring, 1024 * 1024);
 
-	ring = &rdev->ring[CAYMAN_RING_TYPE_CP1_INDEX];
-	ring->ring_obj = NULL;
-	r600_ring_init(rdev, ring, 1024 * 1024);
+	// ring = &rdev->ring[CAYMAN_RING_TYPE_CP1_INDEX];
+	// ring->ring_obj = NULL;
+	// r600_ring_init(rdev, ring, 1024 * 1024);
 
-	ring = &rdev->ring[CAYMAN_RING_TYPE_CP2_INDEX];
-	ring->ring_obj = NULL;
-	r600_ring_init(rdev, ring, 1024 * 1024);
+	// ring = &rdev->ring[CAYMAN_RING_TYPE_CP2_INDEX];
+	// ring->ring_obj = NULL;
+	// r600_ring_init(rdev, ring, 1024 * 1024);
 
-	ring = &rdev->ring[R600_RING_TYPE_DMA_INDEX];
-	ring->ring_obj = NULL;
-	r600_ring_init(rdev, ring, 64 * 1024);
+	// ring = &rdev->ring[R600_RING_TYPE_DMA_INDEX];
+	// ring->ring_obj = NULL;
+	// r600_ring_init(rdev, ring, 64 * 1024);
 
-	ring = &rdev->ring[CAYMAN_RING_TYPE_DMA1_INDEX];
-	ring->ring_obj = NULL;
-	r600_ring_init(rdev, ring, 64 * 1024);
+	// ring = &rdev->ring[CAYMAN_RING_TYPE_DMA1_INDEX];
+	// ring->ring_obj = NULL;
+	// r600_ring_init(rdev, ring, 64 * 1024);
 
-	si_uvd_init(rdev);
-	si_vce_init(rdev);
+	// si_uvd_init(rdev);
+	// si_vce_init(rdev);
 
-	rdev->ih.ring_obj = NULL;
-	r600_ih_ring_init(rdev, 64 * 1024);
+	// rdev->ih.ring_obj = NULL;
+	// r600_ih_ring_init(rdev, 64 * 1024);
 
-	r = r600_pcie_gart_init(rdev);
-	if (r)
-		return r;
+	// r = r600_pcie_gart_init(rdev);
+	// if (r)
+	// 	return r;
 
-	rdev->accel_working = true;
-	r = si_startup(rdev);
-	if (r) {
-		dev_err(rdev->dev, "disabling GPU acceleration\n");
-		si_cp_fini(rdev);
-		cayman_dma_fini(rdev);
-		si_irq_fini(rdev);
-		sumo_rlc_fini(rdev);
-		radeon_wb_fini(rdev);
-		radeon_ib_pool_fini(rdev);
-		radeon_vm_manager_fini(rdev);
-		radeon_irq_kms_fini(rdev);
-		si_pcie_gart_fini(rdev);
-		rdev->accel_working = false;
-	}
+	// rdev->accel_working = true;
+	// r = si_startup(rdev);
+	// if (r) {
+	// 	dev_err(rdev->dev, "disabling GPU acceleration\n");
+	// 	si_cp_fini(rdev);
+	// 	cayman_dma_fini(rdev);
+	// 	si_irq_fini(rdev);
+	// 	sumo_rlc_fini(rdev);
+	// 	radeon_wb_fini(rdev);
+	// 	radeon_ib_pool_fini(rdev);
+	// 	radeon_vm_manager_fini(rdev);
+	// 	radeon_irq_kms_fini(rdev);
+	// 	si_pcie_gart_fini(rdev);
+	// 	rdev->accel_working = false;
+	// }
 
-	/* Don't start up if the MC ucode is missing.
-	 * The default clocks and voltages before the MC ucode
-	 * is loaded are not suffient for advanced operations.
-	 */
-	if (!rdev->mc_fw) {
-		DRM_ERROR("radeon: MC ucode required for NI+.\n");
-		return -EINVAL;
-	}
+	// /* Don't start up if the MC ucode is missing.
+	//  * The default clocks and voltages before the MC ucode
+	//  * is loaded are not suffient for advanced operations.
+	//  */
+	// if (!rdev->mc_fw) {
+	// 	DRM_ERROR("radeon: MC ucode required for NI+.\n");
+	// 	return -EINVAL;
+	// }
 
 	return 0;
 }
